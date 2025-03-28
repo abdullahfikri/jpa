@@ -14,6 +14,21 @@
         <class>dev.mfikri.jpa.entity.Image</class>
         <class>dev.mfikri.jpa.entity.Member</class>
         <class>dev.mfikri.jpa.entity.Department</class>
+        <class>dev.mfikri.jpa.entity.User</class>
+        <class>dev.mfikri.jpa.entity.Credential</class>
+        <class>dev.mfikri.jpa.entity.Wallet</class>
+        <class>dev.mfikri.jpa.entity.Brand</class>
+        <class>dev.mfikri.jpa.entity.Product</class>
+        <class>dev.mfikri.jpa.entity.Employee</class>
+        <class>dev.mfikri.jpa.entity.Manager</class>
+        <class>dev.mfikri.jpa.entity.VicePresident</class>
+        <class>dev.mfikri.jpa.entity.Payment</class>
+        <class>dev.mfikri.jpa.entity.PaymentCreditCard</class>
+        <class>dev.mfikri.jpa.entity.PaymentGopay</class>
+        <class>dev.mfikri.jpa.entity.Transaction</class>
+        <class>dev.mfikri.jpa.entity.TransactionCredit</class>
+        <class>dev.mfikri.jpa.entity.TransactionDebit</class>
+
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
