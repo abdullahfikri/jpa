@@ -218,4 +218,116 @@ public class JpaQueryLanguageTest {
         entityManager.close();
         entityManagerFactory.close();
     }
+
+    @Test
+    void aggregateQuery() {
+        EntityManagerFactory entityManagerFactory = JpaUtil.getEntityManagerFactory();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        entityTransaction.begin();
+
+        TypedQuery<Object[]> query = entityManager.createQuery("select min(p.price), max(p.price), avg(p.price) from Product p", Object[].class);
+        Object[] result = query.getSingleResult();
+
+        System.out.println("Min : " + result[0]);
+        System.out.println("Max : " + result[1]);
+        System.out.println("Average : " + result[2]);
+
+        entityTransaction.commit();
+
+        entityManager.close();
+        entityManagerFactory.close();
+    }
+
+    @Test
+    void aggregateQueryGroupBy() {
+        EntityManagerFactory entityManagerFactory = JpaUtil.getEntityManagerFactory();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        entityTransaction.begin();
+
+        TypedQuery<Object[]> query = entityManager.createQuery("select b.id, min(p.price), max(p.price), avg(p.price) from Product p join p.brand b " +
+                "group by b.id having min (p.price) > :min", Object[].class);
+        query.setParameter("min", 500_000L);
+
+        List<Object[]> result = query.getResultList();
+
+        for (Object[] objects : result) {
+            System.out.println("Brand: " + objects[0]);
+            System.out.println("Min: " + objects[1]);
+            System.out.println("Max: " + objects[2]);
+            System.out.println("Average: " + objects[3]);
+        }
+
+        entityTransaction.commit();
+
+        entityManager.close();
+        entityManagerFactory.close();
+    }
+
+    @Test
+    void nativeQuery() {
+        EntityManagerFactory entityManagerFactory = JpaUtil.getEntityManagerFactory();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        entityTransaction.begin();
+
+        Query query = entityManager.createNativeQuery("select * from brands where brands.created_at is not null", Brand.class);
+        List<Brand> brands = query.getResultList();
+
+        for (Brand brand : brands) {
+            System.out.println(brand.getId() + " : " + brand.getName());
+        }
+
+        entityTransaction.commit();
+
+        entityManager.close();
+        entityManagerFactory.close();
+    }
+
+    @Test
+    void namedNativeQuery() {
+        EntityManagerFactory entityManagerFactory = JpaUtil.getEntityManagerFactory();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        entityTransaction.begin();
+
+        Query query = entityManager.createNamedQuery("Brand.native.findAll", Brand.class);
+        List<Brand> brands = query.getResultList();
+
+        for (Brand brand : brands) {
+            System.out.println(brand.getId() + " : " + brand.getName());
+        }
+
+        entityTransaction.commit();
+
+        entityManager.close();
+        entityManagerFactory.close();
+    }
+
+    @Test
+    void nonQuery() {
+        EntityManagerFactory entityManagerFactory = JpaUtil.getEntityManagerFactory();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        entityTransaction.begin();
+
+        Query query = entityManager.createQuery("update Brand b set b.name =:name where b.id = :id");
+        query.setParameter("name", "Sumsang updated");
+        query.setParameter("id", "sumsang");
+        int impactedRecords = query.executeUpdate();
+
+        System.out.println("Success update " + impactedRecords + " records");
+
+
+        entityTransaction.commit();
+
+        entityManager.close();
+        entityManagerFactory.close();
+    }
 }
